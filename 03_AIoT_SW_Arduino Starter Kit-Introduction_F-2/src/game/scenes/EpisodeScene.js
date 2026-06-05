@@ -6,6 +6,7 @@ import SerialManager from '../../hw/SerialManager.js';
 import CommPanel from '../../story/CommPanel.js';
 import CinematicCard from '../../story/CinematicCard.js';
 import StoryRunner from '../../story/StoryRunner.js';
+import * as sfx from '../fx/sfx.js';
 import { SCRIPT, MISSIONS } from '../episodes/space-station/script.js';
 
 // 에피소드 호스트: 별 배경 + 센서버스 + 통신/시네마틱 + 대본 구동.
@@ -49,6 +50,15 @@ export default class EpisodeScene extends Phaser.Scene {
       if (ok) { this.bus.useSerial(serial); this.modeTag.setText('● 하드웨어 연결됨').setColor(COLORS.success); }
     });
     this.bus.on('mode', (m) => this.modeTag.setText(m === 'serial' ? '● 하드웨어 연결됨' : '● 키보드 모드'));
+
+    // 사운드 음소거 토글(톤 가이드 §7) — [기기 연결] 왼쪽
+    const label = () => (sfx.isMuted() ? '[ ♪̶ 소리 꺼짐 ]' : '[ ♪ 소리 ]');
+    const snd = this.add.text(BASE.w - 24, 44, label(), { fontFamily: FONTS.display, fontSize: '13px', color: COLORS.textDim })
+      .setOrigin(1, 0).setDepth(82000).setInteractive({ useHandCursor: true });
+    snd.on('pointerdown', () => {
+      sfx.setMuted(!sfx.isMuted());
+      snd.setText(label()).setColor(sfx.isMuted() ? COLORS.textDim : COLORS.eddie);
+    });
   }
 
   _complete() {
