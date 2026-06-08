@@ -23,6 +23,7 @@ export default class PreloadScene extends Phaser.Scene {
     queueSceneBg(this, 'title');
     queueSceneBg(this, 'login');
     queueSceneBg(this, 'coldopen');
+    queueSceneBg(this, 'ship');
     // 캐릭터 스프라이트(없으면 절차적 폴백) — 누락돼도 진행
     this.load.image('eddie', `${ASSET_ROOT}/characters/eddie.png`);
     this.load.image('eddie_side', `${ASSET_ROOT}/characters/eddie_side.png`);

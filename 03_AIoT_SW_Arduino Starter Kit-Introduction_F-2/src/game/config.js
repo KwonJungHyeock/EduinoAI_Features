@@ -6,6 +6,8 @@ import SplashScene from './scenes/SplashScene.js';
 import TitleScene from './scenes/TitleScene.js';
 import LoginScene from './scenes/LoginScene.js';
 import ColdOpenScene from './scenes/ColdOpenScene.js';
+import ShipScene from './scenes/ShipScene.js';
+import MissionHostScene from './scenes/MissionHostScene.js';
 import ComingSoonScene from './scenes/ComingSoonScene.js';
 import EpisodeScene from './scenes/EpisodeScene.js';
 
@@ -21,7 +23,7 @@ export default {
     height: BASE.h,
   },
   render: { antialias: true, pixelArt: false },
-  scene: [BootScene, PreloadScene, SplashScene, TitleScene, LoginScene, ColdOpenScene, EpisodeScene, ComingSoonScene],
+  scene: [BootScene, PreloadScene, SplashScene, TitleScene, LoginScene, ColdOpenScene, ShipScene, MissionHostScene, EpisodeScene, ComingSoonScene],
 };
 
 export { SCENES };

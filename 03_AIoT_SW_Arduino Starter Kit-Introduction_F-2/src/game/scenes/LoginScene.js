@@ -17,7 +17,7 @@ export default class LoginScene extends Phaser.Scene {
       onSubmit: (code) => {
         localStorage.setItem('playino.classCode', code);
         hideLogin();
-        goTo(this, SCENES.COLDOPEN, { classCode: code });
+        goTo(this, SCENES.SHIP, { classCode: code });
       },
     });
 

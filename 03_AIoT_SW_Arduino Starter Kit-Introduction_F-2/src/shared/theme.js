@@ -35,6 +35,8 @@ export const SCENES = {
   TITLE:   'Title',
   LOGIN:   'Login',
   COLDOPEN:'ColdOpen',
+  SHIP:    'Ship',
+  MISSION: 'MissionHost',
   HUB:     'ComingSoon',
   EPISODE: 'Episode',
 };
