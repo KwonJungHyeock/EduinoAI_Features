@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EDDIE NEON RUN — 3D</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,"Segoe UI",sans-serif}
+  html,body{height:100%;overflow:hidden;background:#05060d}
+  #hud{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;
+       padding:16px 22px;color:#dff;z-index:5;pointer-events:none;text-shadow:0 2px 8px #000}
+  #hud .score{font-size:30px;font-weight:800;letter-spacing:1px}
+  #hud .sub{font-size:13px;color:#7fd4ff}
+  #hud .right{text-align:right}
+  .overlay{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+           z-index:10;color:#eaffff;background:radial-gradient(circle at 50% 40%,rgba(20,30,60,.7),rgba(3,4,10,.93));
+           text-align:center;gap:14px}
+  .overlay.hide{display:none}
+  .title{font-size:46px;font-weight:900;letter-spacing:3px;
+         background:linear-gradient(90deg,#4fd1ff,#a96bff,#ff6bd0);-webkit-background-clip:text;background-clip:text;color:transparent;
+         filter:drop-shadow(0 0 18px rgba(120,180,255,.5))}
+  .tagline{color:#9fc7ff;font-size:15px;max-width:440px;line-height:1.6}
+  .keys{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+  .key{background:#121a30;border:1px solid #2c3c66;border-radius:8px;padding:8px 12px;font-size:13px;color:#bcdcff}
+  .key b{color:#fff}
+  .btn{margin-top:10px;background:linear-gradient(90deg,#4fd1ff,#8a7bff);color:#04121f;border:none;
+       padding:14px 34px;border-radius:30px;font-size:18px;font-weight:800;cursor:pointer;
+       box-shadow:0 6px 24px rgba(80,150,255,.45);pointer-events:auto}
+  .btn:hover{filter:brightness(1.1)}
+  .big{font-size:60px;font-weight:900;color:#ff6b8a;filter:drop-shadow(0 0 14px rgba(255,80,120,.5))}
+  .final{font-size:22px}
+  #flash{position:fixed;inset:0;background:#ff2b4e;opacity:0;z-index:8;pointer-events:none;transition:opacity .08s}
+</style>
+</head>
+<body>
+  <div id="hud">
+    <div><div class="score" id="score">0</div><div class="sub">SCORE</div></div>
+    <div class="right"><div class="score" id="coins" style="color:#ffd95a">0</div><div class="sub">COINS</div></div>
+  </div>
+  <div id="flash"></div>
+
+  <div class="overlay" id="startScreen">
+    <div class="title">EDDIE NEON RUN</div>
+    <div class="tagline">네온 트랙을 질주하는 EDDIE! 장애물을 피하고 코인을 먹으며 최대한 멀리 달려라.</div>
+    <div class="keys">
+      <div class="key"><b>← →</b> 또는 <b>A D</b> · 좌우 차선</div>
+      <div class="key"><b>↑ / Space / W</b> · 점프</div>
+      <div class="key"><b>↓ / S</b> · 슬라이드</div>
+    </div>
+    <button class="btn" id="startBtn">▶ 시작</button>
+    <div class="tagline" style="font-size:12px;color:#5a7bbf">빨강=벽(피하기) · 주황=허들(점프) · 파랑바=가로막(슬라이드)</div>
+  </div>
+
+  <div class="overlay hide" id="overScreen">
+    <div class="big">GAME OVER</div>
+    <div class="final" id="finalScore"></div>
+    <button class="btn" id="retryBtn">↻ 다시 달리기</button>
+  </div>
+
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+// ============ 기본 셋업 ============
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x05060d);
+scene.fog = new THREE.Fog(0x05060d, 22, 60);
+
+const camera = new THREE.PerspectiveCamera(70, innerWidth/innerHeight, 0.1, 200);
+camera.position.set(0, 4.2, 7.5);
+camera.lookAt(0, 1.2, -6);
+
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+
+addEventListener('resize', ()=>{
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+// ============ 조명 ============
+scene.add(new THREE.AmbientLight(0x4060a0, 0.8));
+const key = new THREE.DirectionalLight(0xffffff, 1.1);
+key.position.set(-6, 12, 6); key.castShadow = true;
+key.shadow.mapSize.set(1024,1024);
+key.shadow.camera.left=-12; key.shadow.camera.right=12;
+key.shadow.camera.top=12; key.shadow.camera.bottom=-12;
+scene.add(key);
+const rim = new THREE.PointLight(0xa96bff, 1.0, 50); rim.position.set(0,6,12); scene.add(rim);
+
+// ============ 트랙(스크롤하는 네온 그리드 바닥) ============
+function gridTexture(){
+  const c = document.createElement('canvas'); c.width=c.height=256;
+  const x = c.getContext('2d');
+  x.fillStyle='#070a16'; x.fillRect(0,0,256,256);
+  x.strokeStyle='#1e3a7a'; x.lineWidth=4;
+  x.strokeRect(0,0,256,256);
+  x.beginPath(); x.moveTo(128,0); x.lineTo(128,256); x.stroke();
+  return new THREE.CanvasTexture(c);
+}
+const tex = gridTexture();
+tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+tex.repeat.set(3, 40);
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(9, 400),
+  new THREE.MeshStandardMaterial({ map:tex, color:0x223, roughness:.9, metalness:.1 })
+);
+ground.rotation.x = -Math.PI/2; ground.position.z = -180; ground.receiveShadow = true;
+scene.add(ground);
+
+// 양옆 네온 벽(속도감)
+const wallMat = new THREE.MeshStandardMaterial({color:0x0a0f22, emissive:0x16224a, emissiveIntensity:.6, metalness:.4, roughness:.4});
+[-5.2,5.2].forEach(x=>{
+  const w = new THREE.Mesh(new THREE.BoxGeometry(.4,3,400), wallMat);
+  w.position.set(x,1.5,-180); scene.add(w);
+});
+// 흐르는 사이드 라이트 기둥(재활용)
+const pillars=[];
+const pillarMat = new THREE.MeshStandardMaterial({color:0x000, emissive:0x4fd1ff, emissiveIntensity:1.4});
+for(let i=0;i<24;i++){
+  const side = i%2===0?-5:5;
+  const p = new THREE.Mesh(new THREE.BoxGeometry(.18,1.2,.18), pillarMat.clone());
+  p.position.set(side, 2.6, -i*8);
+  scene.add(p); pillars.push(p);
+}
+
+const LANES = [-2.2, 0, 2.2];
+
+// ============ 플레이어 (EDDIE 로봇) ============
+const player = new THREE.Group();
+const bodyMat = new THREE.MeshStandardMaterial({color:0x12304f, metalness:.6, roughness:.3, emissive:0x0a1830, emissiveIntensity:.5});
+const body = new THREE.Mesh(new THREE.BoxGeometry(.9,1.0,.7), bodyMat); body.position.y=1.0; body.castShadow=true; player.add(body);
+const head = new THREE.Mesh(new THREE.BoxGeometry(.8,.7,.7), bodyMat); head.position.y=1.85; head.castShadow=true; player.add(head);
+const eyeMat = new THREE.MeshStandardMaterial({color:0x000, emissive:0x4fd1ff, emissiveIntensity:2.2});
+const eyeL = new THREE.Mesh(new THREE.BoxGeometry(.18,.22,.06), eyeMat); eyeL.position.set(-.18,1.9,.36); player.add(eyeL);
+const eyeR = eyeL.clone(); eyeR.position.x=.18; player.add(eyeR);
+// 다리(달리는 흔들림)
+const legMat = bodyMat.clone();
+const legL = new THREE.Mesh(new THREE.BoxGeometry(.28,.7,.3), legMat); legL.position.set(-.22,.35,0); legL.castShadow=true; player.add(legL);
+const legR = new THREE.Mesh(new THREE.BoxGeometry(.28,.7,.3), legMat); legR.position.set(.22,.35,0); legR.castShadow=true; player.add(legR);
+scene.add(player);
+
+// ============ 장애물/코인 풀 ============
+const active = [];
+const dangerMat  = new THREE.MeshStandardMaterial({color:0x000, emissive:0xff2b4e, emissiveIntensity:1.4, metalness:.3, roughness:.4}); // 벽
+const hurdleMat  = new THREE.MeshStandardMaterial({color:0x000, emissive:0xff9a2b, emissiveIntensity:1.4}); // 점프
+const barMat     = new THREE.MeshStandardMaterial({color:0x000, emissive:0x4fa8ff, emissiveIntensity:1.4}); // 슬라이드
+const coinMat    = new THREE.MeshStandardMaterial({color:0x000, emissive:0xffd95a, emissiveIntensity:1.6, metalness:.6, roughness:.2});
+
+function spawnRow(z){
+  const lane = Math.floor(Math.random()*3);
+  const t = Math.random();
+  let m;
+  if(t < .4){ // 벽: 차선 변경으로 회피
+    m = new THREE.Mesh(new THREE.BoxGeometry(1.6,2.2,.7), dangerMat);
+    m.position.set(LANES[lane], 1.1, z); m.userData.type='wall';
+  } else if(t < .7){ // 허들: 점프
+    m = new THREE.Mesh(new THREE.BoxGeometry(1.6,.7,.6), hurdleMat);
+    m.position.set(LANES[lane], .35, z); m.userData.type='hurdle';
+  } else { // 가로막: 슬라이드
+    m = new THREE.Mesh(new THREE.BoxGeometry(1.8,.5,.6), barMat);
+    m.position.set(LANES[lane], 1.9, z); m.userData.type='bar';
+    const post1=new THREE.Mesh(new THREE.BoxGeometry(.12,1.9,.12),barMat); post1.position.set(-.85,-0.95,0); m.add(post1);
+    const post2=post1.clone(); post2.position.x=.85; m.add(post2);
+  }
+  m.castShadow=true; m.userData.lane=lane; m.userData.checked=false;
+  scene.add(m); active.push(m);
+
+  // 코인: 빈 차선 하나에 줄지어
+  let cl; do { cl = Math.floor(Math.random()*3); } while(cl===lane && Math.random()<.6);
+  for(let i=0;i<3;i++){
+    const coin = new THREE.Mesh(new THREE.TorusGeometry(.32,.11,8,16), coinMat);
+    coin.rotation.x=Math.PI/2;
+    coin.position.set(LANES[cl], 1.1, z - i*2.2);
+    coin.userData.type='coin'; coin.userData.lane=cl; coin.userData.checked=false;
+    scene.add(coin); active.push(coin);
+  }
+}
+
+// ============ 게임 상태/입력 ============
+let game = { running:false, speed:14, dist:0, score:0, coins:0, lane:1,
+             y:0, vy:0, sliding:0, sinceSpawn:0 };
+const G = 38, JUMP_V = 11.5;
+
+const $ = id=>document.getElementById(id);
+function setLane(d){ game.lane = Math.max(0, Math.min(2, game.lane+d)); }
+function jump(){ if(game.y<=0.01 && !game.sliding){ game.vy = JUMP_V; } }
+function slide(){ if(game.y<=0.01 && game.sliding<=0){ game.sliding = 0.55; } }
+
+addEventListener('keydown', e=>{
+  if(!game.running) return;
+  if(e.code==='ArrowLeft'||e.code==='KeyA') setLane(-1);
+  else if(e.code==='ArrowRight'||e.code==='KeyD') setLane(1);
+  else if(e.code==='ArrowUp'||e.code==='KeyW'||e.code==='Space') jump();
+  else if(e.code==='ArrowDown'||e.code==='KeyS') slide();
+});
+// 터치/스와이프
+let tsx=0,tsy=0;
+addEventListener('touchstart',e=>{tsx=e.touches[0].clientX;tsy=e.touches[0].clientY;},{passive:true});
+addEventListener('touchend',e=>{
+  if(!game.running)return;
+  const dx=e.changedTouches[0].clientX-tsx, dy=e.changedTouches[0].clientY-tsy;
+  if(Math.abs(dx)>Math.abs(dy)){ setLane(dx>0?1:-1); }
+  else { dy<0?jump():slide(); }
+});
+
+function startGame(){
+  // 정리
+  active.forEach(o=>scene.remove(o)); active.length=0;
+  game = { running:true, speed:14, dist:0, score:0, coins:0, lane:1, y:0, vy:0, sliding:0, sinceSpawn:0 };
+  $('score').textContent=0; $('coins').textContent=0;
+  $('startScreen').classList.add('hide'); $('overScreen').classList.add('hide');
+  // 초기 트랙
+  for(let z=-20; z>-70; z-=7) spawnRow(z);
+  clock.getDelta();
+}
+function gameOver(){
+  game.running=false;
+  $('finalScore').innerHTML = `거리 <b>${Math.floor(game.score)}m</b> · 코인 <b style="color:#ffd95a">${game.coins}</b>`;
+  $('overScreen').classList.remove('hide');
+  const f=$('flash'); f.style.opacity=.6; setTimeout(()=>f.style.opacity=0,90);
+}
+$('startBtn').onclick=startGame;
+$('retryBtn').onclick=startGame;
+
+// ============ 메인 루프 ============
+const clock = new THREE.Clock();
+let runT=0;
+function animate(){
+  requestAnimationFrame(animate);
+  const dt = Math.min(clock.getDelta(), 0.05);
+
+  // 항상 도는 연출
+  tex.offset.y -= (game.running?game.speed:6) * dt * 0.06;
+  pillars.forEach(p=>{
+    p.position.z += (game.running?game.speed:6)*dt;
+    if(p.position.z>10){ p.position.z-=24*8; }
+  });
+
+  if(game.running){
+    runT += dt;
+    game.speed += dt*0.45;                 // 점점 빨라짐
+    game.dist += game.speed*dt;
+    game.score = game.dist;
+    $('score').textContent = Math.floor(game.score);
+
+    // 차선 보간(부드러운 조작)
+    const targetX = LANES[game.lane];
+    player.position.x += (targetX - player.position.x)*Math.min(1, dt*14);
+    player.rotation.z = (targetX - player.position.x)*-0.25; // 기울임
+
+    // 점프 물리
+    game.vy -= G*dt; game.y += game.vy*dt;
+    if(game.y<0){ game.y=0; game.vy=0; }
+    // 슬라이드
+    if(game.sliding>0) game.sliding -= dt;
+    const sliding = game.sliding>0;
+    player.position.y = game.y;
+    player.scale.y = sliding ? 0.5 : 1;
+
+    // 달리는 다리 애니메이션
+    const sw = Math.sin(runT*18)* (game.y>0?0.1:0.6);
+    legL.rotation.x = sw; legR.rotation.x = -sw;
+    eyeMat.emissiveIntensity = 2.0 + Math.sin(runT*10)*0.4;
+
+    // 스폰
+    game.sinceSpawn += game.speed*dt;
+    if(game.sinceSpawn > 8){ game.sinceSpawn=0; spawnRow(-70); }
+
+    // 오브젝트 이동 + 충돌
+    for(let i=active.length-1;i>=0;i--){
+      const o = active[i];
+      o.position.z += game.speed*dt;
+      if(o.userData.type==='coin') o.rotation.z += dt*4;
+
+      // 충돌 판정(플레이어 z≈0 통과 시 1회)
+      if(!o.userData.checked && o.position.z > -0.7){
+        o.userData.checked = true;
+        if(o.userData.lane === game.lane){
+          const t=o.userData.type;
+          if(t==='coin'){
+            game.coins++; $('coins').textContent=game.coins; game.score+=5;
+            scene.remove(o); active.splice(i,1); continue;
+          } else if(t==='wall'){ return gameOver(); }
+          else if(t==='hurdle'){ if(game.y < 0.6) return gameOver(); }
+          else if(t==='bar'){ if(!sliding) return gameOver(); }
+        }
+      }
+      if(o.position.z > 9){ scene.remove(o); active.splice(i,1); }
+    }
+  }
+
+  // 카메라 살짝 따라가기
+  camera.position.x += (player.position.x*0.35 - camera.position.x)*Math.min(1,dt*5);
+  camera.lookAt(player.position.x*0.3, 1.2, -6);
+
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>
