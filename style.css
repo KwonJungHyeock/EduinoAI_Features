@@ -319,3 +319,17 @@ body.present #view{max-width:1080px}
 body.present .prac{grid-template-columns:1fr}
 body.present .codebody{max-height:46vh}
 body.present .terms{grid-template-columns:1fr 1fr}
+
+/* =====================================================================
+ * 이론 + 개념 애니메이션 2단 레이아웃 (완전 초보용)
+ * ===================================================================== */
+.concept{display:grid;grid-template-columns:1.35fr 1fr;gap:22px;align-items:start}
+@media(max-width:820px){.concept{grid-template-columns:1fr}}
+.concept-text p{margin:10px 0}
+.concept-text p:first-child{margin-top:0}
+.concept-anim{position:sticky;top:6px}
+.anim-box{background:linear-gradient(180deg,#fbfcff,#eef3fb);border:1px solid var(--line);
+  border-radius:14px;padding:12px;box-shadow:inset 0 1px 0 #fff}
+.anim-box svg{width:100%;height:auto;display:block}
+.anim-cap{text-align:center;color:var(--ink2);font-size:13px;margin-top:9px;font-weight:700}
+body.present .concept{grid-template-columns:1.2fr 1fr}
