@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>2WD RC카 · 블루투스 피지컬 코딩 코스</title>
+<link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">🚗</span>
+      <div>
+        <div class="ttl">2WD RC카 · 블루투스 코스</div>
+        <div class="sub">HC-06 / HM-10 · L293D 쉴드 · HC-SR04 — 피지컬 코딩 교육</div>
+      </div>
+    </div>
+    <div class="modpick" id="modPick"></div>
+  </header>
+
+  <main class="layout">
+    <!-- 좌: 설정 + 단계 -->
+    <aside class="side">
+      <section class="card">
+        <h3>⚙️ 내 배선 설정</h3>
+        <p class="hint">실제 결선한 대로 맞추면 아래 코드가 자동으로 그에 맞게 생성됩니다.</p>
+        <div id="config"></div>
+        <div id="errors" class="errors"></div>
+      </section>
+
+      <section class="card">
+        <h3>📚 단계</h3>
+        <nav id="steps" class="steps"></nav>
+      </section>
+    </aside>
+
+    <!-- 우: 단계 내용 + 코드 -->
+    <section class="content">
+      <div id="stepHead"></div>
+      <div id="guide" class="guide"></div>
+      <div class="codewrap">
+        <div class="codebar">
+          <span id="codeName" class="codename"></span>
+          <div class="codebtns">
+            <button id="copyBtn" class="mini">📋 복사</button>
+            <button id="dlBtn" class="mini">⬇️ .ino 다운로드</button>
+          </div>
+        </div>
+        <pre class="code"><code id="code"></code></pre>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast"></div>
+
+<script type="module" src="./app.js"></script>
+</body>
+</html>
