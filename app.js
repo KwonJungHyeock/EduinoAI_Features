@@ -45,6 +45,40 @@ const CONCEPT = {
      <p>자율주행의 가장 기초적인 형태입니다. 완성이에요! 🎉</p>`,
 };
 
+// 교사용 수업 도구: 핵심 한 줄 정리 · 핵심 용어 · 발문 · 확인 퀴즈
+const TEACH = {
+  1:{ key:"무선 조종의 첫걸음은 '글자 하나를 주고받는' 것이다.",
+      terms:[["SPP","Classic 블루투스의 시리얼 방식(HC-06)"],["BLE","저전력 블루투스, 아이폰도 지원(HM-10)"],
+             ["SoftwareSerial","일반 핀에서 시리얼 통신을 흉내내는 기능"],["에코","받은 데이터를 그대로 되돌려 보내기"]],
+      ask:["블루투스는 왜 선이 없는데도 데이터를 주고받을 수 있을까요?","보낸 글자가 되돌아오지 않으면 어디를 의심해야 할까요?"],
+      quiz:{q:"HC-06은 어떤 통신 방식일까요?",o:["Bluetooth Classic(SPP)","Bluetooth LE","Wi-Fi","적외선"],a:0,e:"HC-06은 Classic(SPP)이라 아이폰 연결은 안 됩니다."} },
+  2:{ key:"AT 커맨드는 모듈에게 내리는 '설정 명령어'다.",
+      terms:[["AT 커맨드","모듈 설정을 바꾸는 명령"],["baud","통신 속도(초당 비트 수)"],["슬레이브","연결을 받아들이는 역할"]],
+      ask:["모듈 이름을 바꾸면 폰에서 무엇이 달라질까요?","통신 속도를 바꾸면 코드의 어디를 함께 고쳐야 할까요?"],
+      quiz:{q:"HC-06에서 AT 명령이 동작하는 조건은?",o:["폰과 연결된 상태","폰과 연결 안 된 상태","전원을 끈 상태","모터가 도는 중"],a:1,e:"HC-06은 연결되지 않은 상태에서만 AT에 응답합니다."} },
+  3:{ key:"모터의 방향은 전류의 방향, 속도는 PWM으로 정한다.",
+      terms:[["H-브리지","전류 방향을 바꿔 정/역회전시키는 회로"],["L293D","모터를 구동하는 드라이버 칩"],["PWM","켜짐 비율로 평균 전력을 조절"]],
+      ask:["바퀴가 반대로 돈다면 배선을 바꿀까요, 코드를 바꿀까요?","왜 모터는 USB가 아니라 배터리로 돌려야 할까요?"],
+      quiz:{q:"모터 속도를 조절하는 방법은?",o:["전압을 PWM으로 조절","전선을 길게","자석을 추가","GND 분리"],a:0,e:"setSpeed로 PWM 듀티를 바꿔 속도를 조절합니다."} },
+  4:{ key:"문자 하나 = 동작 하나, 이것이 '명령 프로토콜'이다.",
+      terms:[["프로토콜","주고받는 데이터의 약속/규칙"],["파싱","받은 데이터를 해석하는 것"],["switch","값에 따라 분기하는 문법"]],
+      ask:["F/B/L/R/S 말고 어떤 명령을 더 만들 수 있을까요?","여러 글자를 한 번에 보내면 어떻게 처리해야 할까요?"],
+      quiz:{q:"'L' 명령이 하는 일은?",o:["전진","좌회전","정지","속도 증가"],a:1,e:"L은 좌회전(제자리 회전)입니다."} },
+  5:{ key:"0~9라는 '사람의 단위'를 0~255라는 '기계의 단위'로 바꾼다.",
+      terms:[["map()","한 범위 값을 다른 범위로 변환"],["듀티비","PWM에서 켜져 있는 비율"],["PWM","빠른 On/Off로 속도 제어"]],
+      ask:["숫자 5는 속도 몇에 해당할까요? (0~255)","속도가 너무 낮으면 왜 바퀴가 안 돌 수 있을까요?"],
+      quiz:{q:"map(5,0,9,0,255)의 결과에 가장 가까운 값은?",o:["약 141","5","255","50"],a:0,e:"5/9 × 255 ≈ 141 입니다."} },
+  6:{ key:"소리가 다녀온 '시간'을 재면 '거리'가 나온다.",
+      terms:[["Trig","초음파를 쏘게 하는 트리거 신호"],["Echo","반사파가 돌아온 시간만큼 HIGH"],["pulseIn()","핀이 HIGH인 시간을 재는 함수"]],
+      ask:["측정값이 -1이면 무슨 뜻일까요?","왜 시간을 2로 나눠야 할까요?"],
+      quiz:{q:"거리를 구할 때 시간을 2로 나누는 이유는?",o:["소리가 왕복하기 때문","센서가 2개라서","cm 단위라서","오차 보정"],a:0,e:"소리가 갔다가 돌아오므로 편도 거리는 절반입니다."} },
+  7:{ key:"센서로 판단하고 스스로 멈추면, 그것이 자율주행의 시작이다.",
+      terms:[["상태 기계","모드에 따라 다르게 동작하는 구조"],["자동 정지","장애물 감지 시 스스로 멈춤"],["자율 회피","막히면 스스로 방향 전환"]],
+      ask:["수동 모드에도 자동 정지를 넣은 이유는 무엇일까요?","자동 회피를 더 똑똑하게 만들려면 무엇이 필요할까요?"],
+      quiz:{q:"자동 정지 거리는 어디서 바꿀까요?",o:["배선 설정의 정지 거리","모터 포트","블루투스 이름","줄번호"],a:0,e:"설정의 '정지 거리(stopCm)' 값으로 조절합니다."} },
+};
+const quizPick = {}; // {stepId: 선택 인덱스}
+
 const UP = { t:"코드 업로드", d:"코드를 Arduino IDE에 붙여넣고 <b>Uno</b>로 업로드. SoftwareSerial이라 BT선을 빼지 않아도 됩니다." };
 const conn = () => cfg.module === "HC-06"
   ? { t:"폰 연결 (HC-06)", d:"설정&gt;블루투스에서 <code>HC-06</code> 페어링(PIN 1234) 후 <b>Serial Bluetooth Terminal</b> 앱으로 연결." }
@@ -163,15 +197,39 @@ function topTabs(){
 }
 
 function theoryHTML(step){
+  const tc=TEACH[step.id]||{terms:[],ask:[],quiz:null,key:""};
+  const pick=quizPick[step.id];
+  const q=tc.quiz;
+  const quizHTML=q?`<div class="quiz">
+      <div class="ql">Q. ${q.q}</div>
+      <div class="opts">${q.o.map((o,i)=>{
+        let cls=""; if(pick!=null){ if(i===q.a)cls="correct"; else if(i===pick)cls="wrong"; }
+        return `<button class="qopt ${cls}" data-quiz="${step.id}" data-opt="${i}" ${pick!=null?"disabled":""}>
+          <span class="mk">${"ABCD"[i]}</span>${o}</button>`;}).join("")}</div>
+      <div class="qexp ${pick!=null?"show":""}">✅ 정답: ${"ABCD"[q.a]}. ${q.e}</div></div>`:"";
+
   return `<div class="fadein">
-    <div class="card"><div class="card-h"><span class="bar"></span>🎯 학습 목표</div>
+    <div class="keyline"><span class="kic">🎯</span><span class="kt">${tc.key||step.goal}</span></div>
+
+    <div class="card"><div class="card-h"><span class="bar"></span>학습 목표</div>
       <p>${step.goal}</p>
       <ul class="obj-list">
         <li><span class="n">1</span><div><b>${step.title}</b>의 원리와 개념을 이해한다.</div></li>
         <li><span class="n">2</span><div>코드를 업로드하고 실제 동작을 확인한다.</div></li>
         <li><span class="n">3</span><div>배선·설정을 바꿔가며 문제를 해결한다.</div></li>
       </ul></div>
+
     <div class="card"><div class="card-h"><span class="bar"></span>💡 이론 학습</div>${CONCEPT[step.id]||""}</div>
+
+    <div class="card"><div class="card-h"><span class="bar"></span>📌 핵심 용어</div>
+      <div class="terms">${tc.terms.map(([w,d])=>`<div class="term"><div class="tw">${w}</div><div class="td">${d}</div></div>`).join("")}</div></div>
+
+    <div class="teacher">
+      <div class="th">👩‍🏫 수업 도우미<span class="tag">교사용</span></div>
+      <div class="ask"><div class="al">🗣️ 이렇게 질문해 보세요</div>
+        <ul>${tc.ask.map(a=>`<li>${a}</li>`).join("")}</ul></div>
+      ${quizHTML}
+    </div>
   </div>`;
 }
 
@@ -303,7 +361,18 @@ function render(){
   $("view").innerHTML=html;
   bindView();
   renderNav();
+  setToolbarTitle();
   $("mainScroll").scrollTop=0;
+}
+
+function setToolbarTitle(){
+  let t;
+  if(view==="intro") t="코스 소개";
+  else if(view==="ref-hw") t="공통 기초학습 · 하드웨어 구성";
+  else if(view==="ref-wire") t="공통 기초학습 · 배선 · 전원";
+  else { const s=STEPS.find(x=>x.id===view); const tn={theory:"이론 학습",practice:"실습하기",code:"코드 살펴보기"}[tab];
+    t=`본 학습 커리큘럼 · <b>${String(s.id).padStart(2,"0")} ${s.title}</b> · ${tn}`; }
+  $("tbTitle").innerHTML=t;
 }
 
 function bindView(){
@@ -313,6 +382,10 @@ function bindView(){
   $("view").querySelectorAll("[data-sub]").forEach(el=>el.onclick=()=>setSub(+el.dataset.sub));
   $("view").querySelectorAll("[data-copy]").forEach(el=>el.onclick=()=>copyCode(+el.dataset.copy));
   $("view").querySelectorAll("[data-dl]").forEach(el=>el.onclick=()=>dlCode(+el.dataset.dl));
+  $("view").querySelectorAll("[data-quiz]").forEach(el=>el.onclick=()=>{
+    const id=+el.dataset.quiz; if(quizPick[id]!=null)return;
+    quizPick[id]=+el.dataset.opt; render();
+  });
   const sp=$("subPrev"),sn=$("subNext");
   if(sp)sp.onclick=()=>setSub(sub-1); if(sn)sn.onclick=()=>setSub(sub+1);
 }
@@ -374,7 +447,27 @@ addEventListener("keydown",e=>{
   }
 });
 
+// ================= 툴바: 글자 크기 · 수업 모드 =================
+const ZOOMS=[0.9,1,1.15,1.3,1.5,1.7];
+let zi=Number(localStorage.getItem("eduino_zoom")||1);   // index
+let present=localStorage.getItem("eduino_present")==="1";
+function applyView(){
+  document.documentElement.style.setProperty("--zoom",ZOOMS[zi]);
+  $("fsLabel").textContent=Math.round(ZOOMS[zi]*100)+"%";
+  document.body.classList.toggle("present",present);
+  localStorage.setItem("eduino_zoom",zi);
+  localStorage.setItem("eduino_present",present?"1":"0");
+}
+$("fsDown").onclick=()=>{ zi=Math.max(0,zi-1); applyView(); };
+$("fsUp").onclick=()=>{ zi=Math.min(ZOOMS.length-1,zi+1); applyView(); };
+$("presentBtn").onclick=()=>{
+  present=!present;
+  if(present && ZOOMS[zi]<1.3) zi=3;      // 수업 모드 진입 시 크게(1.3)
+  if(!present && ZOOMS[zi]>1.15) zi=1;    // 해제 시 보통으로
+  applyView();
+};
+
 // ================= 시작 =================
 $("cfgClose").onclick=()=>openCfg(false);
 $("cfgBack").onclick=()=>openCfg(false);
-renderMod(); renderConfig(); render();
+renderMod(); renderConfig(); applyView(); render();

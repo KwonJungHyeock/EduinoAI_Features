@@ -225,3 +225,97 @@ input[type=range]{width:120px;accent-color:var(--coral)}
   .sidebar{display:none}
   .main-scroll{padding:18px 16px 50px}
 }
+
+/* =====================================================================
+ * 교실 시인성 · 수업 모드 · 교사용 도구 (readability upgrade)
+ * ===================================================================== */
+
+/* --- 원거리 시인성: 본문/코드 크기·대비 상향 --- */
+:root{ --ink2:#39414f; }                         /* 본문 대비 강화 */
+.page-title{font-size:30px}
+.tab{font-size:15.5px;padding:12px 2px}
+.card p{font-size:15.5px;line-height:1.85;color:#333c4d}
+.card-h{font-size:17.5px}
+.card li{font-size:15px}
+.pill{font-size:14px;padding:9px 18px}
+.gstep .t{font-size:14.5px}.gstep .d{font-size:13.5px;line-height:1.7}
+.alert{font-size:14px}
+pre.code code,.gutter{font-size:13.5px;line-height:1.85}
+.gutter{line-height:1.85}
+.serial-body{font-size:13.5px}
+.wirebox{font-size:13.5px;line-height:2}
+
+/* --- 상단 툴바 --- */
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:10px 34px;background:#fff;border-bottom:1px solid var(--line);flex:0 0 auto}
+.tb-title{font-size:13px;color:var(--dim);font-weight:700}
+.tb-title b{color:var(--ink)}
+.tb-actions{display:flex;align-items:center;gap:12px}
+.fs-ctl{display:flex;align-items:center;gap:8px;background:var(--chip);border-radius:10px;padding:4px 8px}
+.fs-ctl button{background:#fff;border:1px solid var(--line2);border-radius:7px;width:32px;height:30px;font-weight:800;color:var(--ink2);font-size:13px}
+.fs-ctl button:hover{border-color:var(--coral);color:var(--coral)}
+.fs-ctl span{font-size:12px;font-weight:700;color:var(--ink2);min-width:38px;text-align:center}
+.present-btn{background:var(--ink);color:#fff;border:none;border-radius:10px;padding:9px 16px;font-weight:800;font-size:13.5px}
+.present-btn:hover{background:#000}
+body.present .present-btn{background:var(--coral)}
+body.present .present-btn::after{content:" 켜짐"}
+
+/* --- 콘텐츠 확대(글자 크기/수업 모드): #view 전체 스케일 --- */
+#view{zoom:var(--zoom,1)}
+
+/* --- 수업 모드: 사이드바 접고 콘텐츠 집중 --- */
+body.present .app{grid-template-columns:1fr}
+body.present .sidebar{display:none}
+body.present .cfg-open{display:none}
+body.present .main-scroll{padding:30px 48px 70px}
+body.present #view{max-width:1400px}
+body.present .toolbar{padding:12px 48px}
+body.present .tb-title{font-size:16px}
+body.present .lesson-nav .lnav{padding:16px 26px;font-size:15px}
+body.present .pager .arrow{width:44px;height:44px;font-size:19px}
+
+/* --- 핵심 한 줄 정리 (hook, 큼직하게) --- */
+.keyline{background:linear-gradient(100deg,#fff5f5,#fff);border:1px solid var(--coral-tint2);
+  border-left:6px solid var(--coral);border-radius:14px;padding:20px 24px;margin-bottom:16px;
+  display:flex;align-items:center;gap:14px;box-shadow:var(--shadow)}
+.keyline .kic{font-size:26px}
+.keyline .kt{font-size:21px;font-weight:800;color:var(--ink);line-height:1.5;letter-spacing:-.3px}
+body.present .keyline .kt{font-size:24px}
+
+/* --- 핵심 용어 chips --- */
+.terms{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+@media(max-width:760px){.terms{grid-template-columns:1fr}}
+.term{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.term .tw{font-weight:800;color:var(--coral-d);font-size:14.5px;margin-bottom:3px}
+.term .td{color:var(--ink2);font-size:13px;line-height:1.6}
+
+/* --- 교사용 수업 도우미 카드 --- */
+.teacher{background:#fbfdff;border:1px dashed var(--blue-line);border-radius:var(--radius);
+  padding:20px 22px;margin-bottom:16px}
+.teacher .th{display:flex;align-items:center;gap:8px;font-weight:800;font-size:16px;color:var(--blue);margin-bottom:12px}
+.teacher .th .tag{margin-left:8px;background:var(--blue-tint);color:var(--blue);font-size:11px;
+  font-weight:800;padding:3px 10px;border-radius:20px}
+.ask{margin:6px 0 14px}
+.ask .al{font-weight:800;font-size:13.5px;color:var(--ink);margin-bottom:6px}
+.ask ul{margin:0;padding-left:20px;color:#33405e;font-size:14.5px;line-height:1.9}
+.quiz .ql{font-weight:800;font-size:15px;margin-bottom:10px}
+.quiz .opts{display:grid;gap:8px}
+.qopt{text-align:left;background:#fff;border:1.5px solid var(--line2);border-radius:11px;padding:12px 14px;
+  font-size:14.5px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:10px;transition:.15s}
+.qopt:hover{border-color:var(--blue)}
+.qopt .mk{width:24px;height:24px;flex:0 0 auto;border-radius:7px;background:var(--chip);
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:var(--ink2)}
+.qopt.correct{border-color:var(--ok);background:#f0fbf5}
+.qopt.correct .mk{background:var(--ok);color:#fff}
+.qopt.wrong{border-color:var(--coral);background:var(--coral-tint)}
+.qopt.wrong .mk{background:var(--coral);color:#fff}
+.qexp{margin-top:12px;background:#f0fbf5;border:1px solid #bfe8d2;border-radius:11px;padding:12px 14px;
+  font-size:13.5px;color:#1f6b48;line-height:1.7;display:none}
+.qexp.show{display:block}
+body.present .qopt{font-size:16px;padding:14px 16px}
+
+/* 수업 모드: 가로 넘침 방지 — 콘텐츠 1단으로 쌓고 폭 조정 */
+body.present #view{max-width:1080px}
+body.present .prac{grid-template-columns:1fr}
+body.present .codebody{max-height:46vh}
+body.present .terms{grid-template-columns:1fr 1fr}
