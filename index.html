@@ -7,43 +7,39 @@
 <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <header class="top">
-    <div class="brand">
-      <span class="logo">🤖</span>
-      <div>
-        <div class="ttl">Eduino · 2WD RC카 코스</div>
-        <div class="sub">블루투스 피지컬 코딩 · 캐러셀 커리큘럼</div>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">
+        <span class="logo-mark">ca</span>
+        <span class="logo-txt">Eduino <b>AI</b><small>AIoT 코딩교육</small></span>
       </div>
-    </div>
-    <div class="top-actions">
-      <div class="modpick" id="modPick"></div>
-      <button class="cfgbtn" id="cfgToggle">⚙️ 배선 설정</button>
-    </div>
-  </header>
+      <div class="device-card">
+        <div class="dev-top">🚗 2WD RC카 코스</div>
+        <div class="dev-sub">블루투스 피지컬 코딩</div>
+      </div>
+      <nav id="nav"></nav>
+    </aside>
 
-  <div class="chips" id="chips"></div>
-  <div class="pbar"><i id="pfill"></i></div>
-
-  <div class="viewport" id="viewport">
-    <div class="track" id="track"></div>
+    <main class="main">
+      <div class="main-scroll" id="mainScroll">
+        <div id="view"></div>
+      </div>
+    </main>
   </div>
 
-  <footer class="nav">
-    <button id="prev" class="navbtn">← 이전</button>
-    <div class="navmid" id="navmid"></div>
-    <button id="next" class="navbtn primary">다음 →</button>
-  </footer>
-
-  <!-- 설정 슬라이드오버 -->
-  <div class="backdrop" id="backdrop"></div>
-  <aside class="cfgpanel" id="cfgpanel">
-    <div class="cfghead">
-      <h3>⚙️ 내 배선 설정</h3>
-      <button class="xbtn" id="cfgClose">✕</button>
+  <!-- 배선 설정 모달 -->
+  <div class="modal-back" id="cfgBack"></div>
+  <aside class="modal-cfg" id="cfgModal">
+    <div class="cfg-head">
+      <h3>⚙️ 배선 설정</h3>
+      <button class="x" id="cfgClose">✕</button>
     </div>
-    <p class="hint">실제 결선한 대로 맞추면 모든 챕터의 코드가 자동으로 그에 맞게 바뀝니다.</p>
+    <p class="cfg-hint">실제 결선한 대로 맞추면 모든 코드가 자동으로 그에 맞게 바뀝니다.</p>
+    <div class="cfg-row" style="margin-bottom:6px">
+      <label>블루투스 모듈</label><div class="modpick" id="modPick"></div>
+    </div>
     <div id="config"></div>
-    <div id="errors" class="errors"></div>
+    <div id="errors" class="cfg-err"></div>
   </aside>
 
   <div id="toast" class="toast"></div>
