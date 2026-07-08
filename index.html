@@ -3,56 +3,50 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>2WD RC카 · 블루투스 피지컬 코딩 코스</title>
+<title>Eduino · 2WD RC카 블루투스 코스</title>
 <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <header class="topbar">
+  <header class="top">
     <div class="brand">
-      <span class="logo">🚗</span>
+      <span class="logo">🤖</span>
       <div>
-        <div class="ttl">2WD RC카 · 블루투스 코스</div>
-        <div class="sub">HC-06 / HM-10 · L293D 쉴드 · HC-SR04 — 피지컬 코딩 교육</div>
+        <div class="ttl">Eduino · 2WD RC카 코스</div>
+        <div class="sub">블루투스 피지컬 코딩 · 캐러셀 커리큘럼</div>
       </div>
     </div>
-    <div class="modpick" id="modPick"></div>
+    <div class="top-actions">
+      <div class="modpick" id="modPick"></div>
+      <button class="cfgbtn" id="cfgToggle">⚙️ 배선 설정</button>
+    </div>
   </header>
 
-  <main class="layout">
-    <!-- 좌: 설정 + 단계 -->
-    <aside class="side">
-      <section class="card">
-        <h3>⚙️ 내 배선 설정</h3>
-        <p class="hint">실제 결선한 대로 맞추면 아래 코드가 자동으로 그에 맞게 생성됩니다.</p>
-        <div id="config"></div>
-        <div id="errors" class="errors"></div>
-      </section>
+  <div class="chips" id="chips"></div>
+  <div class="pbar"><i id="pfill"></i></div>
 
-      <section class="card">
-        <h3>📚 단계</h3>
-        <nav id="steps" class="steps"></nav>
-      </section>
-    </aside>
+  <div class="viewport" id="viewport">
+    <div class="track" id="track"></div>
+  </div>
 
-    <!-- 우: 단계 내용 + 코드 -->
-    <section class="content">
-      <div id="stepHead"></div>
-      <div id="guide" class="guide"></div>
-      <div class="codewrap">
-        <div class="codebar">
-          <span id="codeName" class="codename"></span>
-          <div class="codebtns">
-            <button id="copyBtn" class="mini">📋 복사</button>
-            <button id="dlBtn" class="mini">⬇️ .ino 다운로드</button>
-          </div>
-        </div>
-        <pre class="code"><code id="code"></code></pre>
-      </div>
-    </section>
-  </main>
+  <footer class="nav">
+    <button id="prev" class="navbtn">← 이전</button>
+    <div class="navmid" id="navmid"></div>
+    <button id="next" class="navbtn primary">다음 →</button>
+  </footer>
+
+  <!-- 설정 슬라이드오버 -->
+  <div class="backdrop" id="backdrop"></div>
+  <aside class="cfgpanel" id="cfgpanel">
+    <div class="cfghead">
+      <h3>⚙️ 내 배선 설정</h3>
+      <button class="xbtn" id="cfgClose">✕</button>
+    </div>
+    <p class="hint">실제 결선한 대로 맞추면 모든 챕터의 코드가 자동으로 그에 맞게 바뀝니다.</p>
+    <div id="config"></div>
+    <div id="errors" class="errors"></div>
+  </aside>
 
   <div id="toast" class="toast"></div>
-
 <script type="module" src="./app.js"></script>
 </body>
 </html>
